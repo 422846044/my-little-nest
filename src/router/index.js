@@ -6,9 +6,10 @@ import Text from '../components/Text.vue'
   
 const routes = [  
   { path: '/home', component: Home },
+  { path: '/', redirect:'/home' },
   { path: '/about', component: About },
   { path: '/tools/djc', component: Djc },
-  { path: '/Text', component: Text }
+  { path: '/text', component: Text }
 ]  
   
 const router = createRouter({  

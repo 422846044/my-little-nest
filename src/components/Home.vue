@@ -45,11 +45,11 @@ var infoList = [
     <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <router-link to="/Text"><h1>{{info.title}}</h1></router-link>
+        <router-link to="/text"><h1>{{info.title}}</h1></router-link>
         <el-tag>Tag 1</el-tag>
       </div>
     </template>
-    <router-link to="/Text"><div class="text item" style="padding-top: 10px;">{{ info.content }}</div></router-link>
+    <router-link to="/text"><div class="text item" style="padding-top: 10px;">{{ info.content }}</div></router-link>
     <div style="padding-top:1%;font-size: x-small;color:grey;"><el-icon><Calendar /></el-icon> {{info.time}}</div>
   </el-card>
   </div>
