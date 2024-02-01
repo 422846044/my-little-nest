@@ -1,11 +1,7 @@
 <script setup>
-import { toRefs } from 'vue';
-
-
 var props = defineProps({
   logInfoList: Array
 })
-//let {logInfoList} = toRefs(props);
 </script>
 
 <template>

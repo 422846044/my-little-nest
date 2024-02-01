@@ -5,7 +5,7 @@ import Djc from '../components/Djc.vue'
 import Text from '../components/Text.vue'
   
 const routes = [  
-  { path: '/', component: Home },
+  { path: '/home', component: Home },
   { path: '/about', component: About },
   { path: '/tools/djc', component: Djc },
   { path: '/Text', component: Text }
@@ -13,7 +13,7 @@ const routes = [
   
 const router = createRouter({  
   history: createWebHistory(),  
-  routes,  
+  routes
 })  
   
 export default router

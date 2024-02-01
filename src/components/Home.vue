@@ -45,8 +45,8 @@ var infoList = [
     <el-card class="box-card">
     <template #header>
       <div class="card-header">
-        <span>{{info.title}}</span>
-        <router-link to="/Text"><el-button type="primary" style="margin-left: 1%;"><el-icon><View /></el-icon>查看</el-button></router-link>
+        <router-link to="/Text"><h1>{{info.title}}</h1></router-link>
+        <el-tag>Tag 1</el-tag>
       </div>
     </template>
     <router-link to="/Text"><div class="text item" style="padding-top: 10px;">{{ info.content }}</div></router-link>
