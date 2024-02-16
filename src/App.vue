@@ -6,7 +6,7 @@ import { provide,inject, reactive,ref } from 'vue'
 </script>
 
 <template>
-  <el-container >
+  <el-container>
     <el-header>
       <Top></Top>
     </el-header>
@@ -14,8 +14,6 @@ import { provide,inject, reactive,ref } from 'vue'
       <!-- 路由匹配到的组件将渲染在这里 -->
       <router-view></router-view>
     </el-main>
-    
-    
   <el-footer>
     <Foot></Foot>
   </el-footer>
