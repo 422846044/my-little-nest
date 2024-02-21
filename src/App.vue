@@ -1,7 +1,29 @@
 <script setup>
 import Top from './components/Top.vue'
 import Foot from './components/Foot.vue'
-import { provide,inject, reactive,ref } from 'vue'
+import {onMounted} from 'vue'
+import {dictMapQuery} from './api'
+
+
+onMounted(async () => {
+  //获取字典信息
+  let category = await getDict('wzfl')
+  let tags = await getDict('wzbq')
+  localStorage.setItem('dictCategory',JSON.stringify(category))
+  localStorage.setItem('dictTags',JSON.stringify(tags))
+})
+
+async function getDict(code){
+  let dictData = {};
+  await dictMapQuery({dictCode:code})
+    .then(res => {
+      if (res.data.success == true) {
+        dictData=res.data.data
+      }
+    });
+  return dictData;
+}
+
 
 </script>
 
@@ -10,29 +32,28 @@ import { provide,inject, reactive,ref } from 'vue'
     <el-header>
       <Top></Top>
     </el-header>
-    <el-main>
+    
+    <el-main style="overflow: visible;">
       <!-- 路由匹配到的组件将渲染在这里 -->
       <router-view></router-view>
     </el-main>
   <el-footer>
     <Foot></Foot>
   </el-footer>
-  
   </el-container>
+    
+  
   
 </template>
 
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+
+.el-header{
+  padding-left: 0px !important;
+  padding-right: 0px !important;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>

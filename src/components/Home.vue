@@ -1,72 +1,101 @@
 <script setup>
+import { onMounted, reactive } from 'vue'
+import { articleListQuery } from '../api';
 
-
-var props = defineProps({
-  logInfoList: Array
+let pageInfo = reactive({
+  lastId: -1,
+  pageSize: 10,
+  isNext:true
 })
 
-var infoList = [
-  {
-    id:1,
-    title:'redis的持久化机制',
-    content:"jfdsredis中持久化就是将内存中的数据保存到磁盘中，防止lkafjlkfkld...",
-    time:"2023-10-01"
-  },
-  {
-    id:2,
-    title:'tcp和udp',
-    content:"tcp全称是transmission control protocal传输控制协议，它被称为一种面向连接的协议，发送数据前需要进行握手。udp全称是user datagram protocol用户数据报协议",
-    time:"2023-10-01"
-  },
-  {
-    id:3,
-    title:'SpringBean',
-    content:"生命周期：bean的生命周期从实例化开始，到依赖注入，此时若实现beanNameWare接口则会执行setBeanName方法，若实现BeanFactoryWare则会执行setBeanFactory方法，此时执行后置处理器预初始化，若实现InitializingBean接口则会执行afterPropertiesSet方法，再进行初始化方法，再执行后置处理器后初始化方法，若实现disposableBean接口，执行destroy方法，最后执行销毁方法。",
-    time:"2023-10-01"
-  },
-  {
-    id:4,
-    title:'最左前缀原则',
-    content:"ql语句中使用到了组合索引最左边的索引，那么可以利用这个组合索引去匹配。当遇到范围查询（>、<、like、between）就会停止匹配，后面的字段不会使用索引。对（a，b，c）建立索引，那么条件a/ab/abc会使用索引，b/bc/c/cb不会使用索引",
-    time:"2023-10-01"
-  },
-  {
-    id:5,
-    title:'线程池参数',
-    content:"线程池参数主要为，corePoolSize核心线程数，maxNumPoolSize最大线程数，keepLive最大存活时间，阻塞队列，线程工厂，拒绝策略。",
-    time:"2023-10-01"
-  }];
+let info = reactive({
+  articleList:[],
+  total:100
+});
+
+let dict = reactive({
+  category:[],
+  tags:[]
+})
+
+onMounted(() => {
+  getArticleList()
+  dict.category = JSON.parse(localStorage.getItem('dictCategory'))
+  dict.tags = JSON.parse(localStorage.getItem('dictTags'))
+})
+
+const getArticleList = () => {
+  articleListQuery(pageInfo)
+    .then(res => {
+      if (res.data.success == true) {
+        info.articleList = res.data.data.articleList;
+        pageInfo.lastId = res.data.data.lastId;
+        info.total=res.data.data.total;
+      }
+    })
+}
+
+
 </script>
 
 <template>
   <el-space fill wrap direction="vertical" :fill-ratio=100 style="width: 100%">
-    <div v-for="info in infoList" :key="info.id">
-    <el-card class="box-card">
-    <template #header>
-      <div class="card-header">
-        <router-link to="/text"><h1>{{info.title}}</h1></router-link>
-        <el-tag>Tag 1</el-tag>
+    <div v-for="info in info.articleList" :key="info.id">
+      <el-card class="box-card">
+        <template #header>
+          <div class="card-header">
+            <router-link :to="{path:'/text',query:{id:info.id}}">
+              <div class="card-title">{{ info.title }}</div>
+            </router-link>
+            <el-tag>{{dict.tags[info.category]}}</el-tag>
+          </div>
+        </template>
+        <router-link :to="{path:'/text',query:{id:info.id}}">
+          <el-container>
+        <div v-show="info.cover" style="margin-right: 20px;">
+          <img :src="info.cover" 
+          style="border-radius: 4px;"/>
       </div>
-    </template>
-    <router-link to="/text"><div class="text item" style="padding-top: 10px;">{{ info.content }}</div></router-link>
-    <div style="padding-top:1%;font-size: x-small;color:grey;"><el-icon><Calendar /></el-icon> {{info.time}}</div>
-  </el-card>
-  </div>
+            
+        <div class="text item">{{ info.summary }}</div>
+          </el-container>
+          
+        </router-link>
+        <div style="padding-top:1%;font-size: x-small;color:grey;"><el-icon>
+            <Calendar />
+          </el-icon> {{ info.createTime }}</div>
+      </el-card>
+    </div>
   </el-space>
-  
+  <el-pagination layout="prev, pager, next" :total="info.total" :page-size="pageInfo.pageSize"
+   @prev-click="pageInfo.isNext=false" @next-click="pageInfo.isNext=true"/>
 </template>
 
 <style scoped>
 .read-the-docs {
   color: #888;
 }
-a{
+
+a {
   text-decoration: none;
 }
-a:link,a:visited{
+
+a:link,
+a:visited {
   color: black;
 }
+
 .router-link-active {
   text-decoration: none;
 }
+
+.card-title{
+  display: block;
+    font-size: 1.5em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+
 </style>

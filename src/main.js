@@ -13,4 +13,8 @@ let app = createApp(App);
 app.provide('$axios',axios);
 app.use(router);
 app.use(ElementPlus)
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }
 app.mount('#app')
