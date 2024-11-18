@@ -1,74 +1,108 @@
 <script setup>
 import { onMounted, reactive } from 'vue'
-import { articleListQuery } from '../api';
+import { articleListQuery } from '../api'
+import Aside from './Aside.vue'
+import ArticleList from './ArticleList.vue'
+import HomeSearch from './HomeSearch.vue'
+import { dictMapQuery } from '../api'
 
-let pageInfo = reactive({
-  lastId: -1,
-  pageSize: 10,
-  isNext:true
-})
-
-let info = reactive({
-  articleList:[],
-  total:100
+const info = reactive({
+  articleList: [],
+  total: 0,
+  category: {},
+  tags: {},
+  pageInfo: {
+    pageSize: 10,
+    pageNum: 1,
+    order: 'create_time',
+    sort: 'desc',
+    keyword: '',
+    tag: '',
+    category: null
+  }
 });
 
-let dict = reactive({
-  category:[],
-  tags:[]
-})
+async function getDict(code) {
+  let dictData = {};
+  await dictMapQuery({ dictCode: code })
+    .then(res => {
+      if (res.data.success == true) {
+        dictData = res.data.data
+      }
+    });
+  return dictData;
+}
 
-onMounted(() => {
+onMounted(async () => {
+  //获取字典信息
+  info.category = await getDict('wzfl')
+  info.tags = await getDict('wzbq')
   getArticleList()
-  dict.category = JSON.parse(localStorage.getItem('dictCategory'))
-  dict.tags = JSON.parse(localStorage.getItem('dictTags'))
 })
 
 const getArticleList = () => {
-  articleListQuery(pageInfo)
+  articleListQuery(info.pageInfo)
     .then(res => {
       if (res.data.success == true) {
-        info.articleList = res.data.data.articleList;
-        pageInfo.lastId = res.data.data.lastId;
-        info.total=res.data.data.total;
+        info.articleList = res.data.data.list
+        info.total = res.data.data.total;
       }
     })
 }
 
+function handleCurrentChange() {
+  getArticleList()
 
+}
+
+function handleSizeChange() {
+  getArticleList()
+}
+
+function inputChange(value){
+  info.pageInfo.keyword = value
+  getArticleList()
+}
+
+function categoryCheck(value){
+  info.pageInfo.keyword = ''
+  info.pageInfo.tag = ''
+  info.pageInfo.category = value
+  getArticleList()
+  info.pageInfo.category = null
+}
+
+function tagsCheck(value){
+  info.pageInfo.keyword = ''
+  info.pageInfo.category = null
+  info.pageInfo.tag = value
+  getArticleList()
+  info.pageInfo.tag = ''
+}
 </script>
-
+                 
 <template>
-  <el-space fill wrap direction="vertical" :fill-ratio=100 style="width: 100%">
-    <div v-for="info in info.articleList" :key="info.id">
-      <el-card class="box-card">
-        <template #header>
-          <div class="card-header">
-            <router-link :to="{path:'/text',query:{id:info.id}}">
-              <div class="card-title">{{ info.title }}</div>
-            </router-link>
-            <el-tag>{{dict.tags[info.category]}}</el-tag>
-          </div>
-        </template>
-        <router-link :to="{path:'/text',query:{id:info.id}}">
-          <el-container>
-        <div v-show="info.cover" style="margin-right: 20px;">
-          <img :src="info.cover" 
-          style="border-radius: 4px;"/>
+  <el-container>
+    <el-aside width="auto" style="overflow: visible;" class="aside">
+      <Aside :category="info.category" :tags="info.tags" @categoryCheck="categoryCheck" @tagsCheck="tagsCheck"></Aside>
+    </el-aside>
+    <el-container>
+      <el-header>
+        <HomeSearch placeholder="请输入关键词" @inputChange="inputChange"></HomeSearch>
+      </el-header>
+    <el-main style="overflow: visible;">                    
+      <ArticleList :articleList="info.articleList" :category="info.category" :tags="info.tags"></ArticleList>
+      <div style="margin-top: 1em;">
+        <el-pagination v-model:current-page="info.pageInfo.pageNum" v-model:page-size="info.pageInfo.pageSize"
+          :page-sizes="[1, 10, 20, 30, 50, 100]" size="default" :disabled="false" :background="true"
+          layout="total,sizes, prev, pager, next, jumper" :total="info.total" @size-change="handleSizeChange()"
+          @current-change="handleCurrentChange()" />
       </div>
-            
-        <div class="text item">{{ info.summary }}</div>
-          </el-container>
-          
-        </router-link>
-        <div style="padding-top:1%;font-size: x-small;color:grey;"><el-icon>
-            <Calendar />
-          </el-icon> {{ info.createTime }}</div>
-      </el-card>
-    </div>
-  </el-space>
-  <el-pagination layout="prev, pager, next" :total="info.total" :page-size="pageInfo.pageSize"
-   @prev-click="pageInfo.isNext=false" @next-click="pageInfo.isNext=true"/>
+
+    </el-main>
+    </el-container>
+    
+  </el-container>
 </template>
 
 <style scoped>
@@ -89,13 +123,28 @@ a:visited {
   text-decoration: none;
 }
 
-.card-title{
+.aside {
+  padding: 20px 0 20px 20px;
+}
+
+.card-title {
   display: block;
-    font-size: 1.5em;
-    margin-block-end: 0.83em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    font-weight: bold;
+  font-size: 1.5em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  font-weight: bold;
+}
+
+.card-category,
+.card-tags {
+  display: block;
+  margin-top: 1em;
+}
+
+.el-header{
+    text-align: center;
+    justify-content: center;
+    height: auto;
 }
 
 </style>

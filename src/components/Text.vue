@@ -1,11 +1,11 @@
 <script setup>
 import { reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { articleInfoQuery,simpleUserInfoQuery } from '../api'
+import { articleInfoQuery,simpleUserInfoQuery,dictMapQuery } from '../api'
 import { ArrowLeft } from '@element-plus/icons-vue'
 const router = useRouter()
 const goBack = () => {
-  router.go(-1)
+  router.push('/home')
 }
 
 
@@ -28,67 +28,39 @@ let info = reactive({
 
 
 let dict = reactive({
-  category: [],
-  tags: []
+  category: {},
+  tags: {}
 })
 
 const route = useRoute()
 let id = route.query.id
 
-
-const directory = [{
-  name: 'test1',
-  href: '',
-  child: [
-    {
-      name: 'test',
-      href: '#test',
-      child: []
-    }
-  ]
-}, {
-  name: 'test2',
-  href: '',
-  child: [
-    {
-      name: 'test3',
-      href: '#',
-      child: []
-    }
-  ]
-}]
-
-function getInfo(directory) {
-  let str = '';
-  if (directory.length == 0) return '';
-  str += '<ul>'
-  for (let i = 0; i < directory.length; i++) {
-    let info = directory[i];
-    str += '<li><a href="' + info.href + '">' + info.name + '</a>' + getInfo(info.child) + '</li>'
-  }
-  str += '</ul>'
-  return str
+async function getDict(code) {
+  let dictData = {};
+  await dictMapQuery({ dictCode: code })
+    .then(res => {
+      if (res.data.success == true) {
+        dictData = res.data.data
+      }
+    });
+  return dictData;
 }
 
-
-let directoryText = getInfo(directory)
-
 var nodeTree = reactive([])
-onMounted(() => {
-  dict.category = JSON.parse(localStorage.getItem('dictCategory'))
-  dict.tags = JSON.parse(localStorage.getItem('dictTags'))
+onMounted(async () => {
+  //获取字典信息
+  dict.category = await getDict('wzfl')
+  dict.tags =  await getDict('wzbq')
   articleInfoQuery({ id: id })
     .then(res => {
       if (res.data.success == true) {
-        if(!isNaN(parseInt(res.data.data.author))){
-          simpleUserInfoQuery({userId:parseInt(res.data.data.author)})
+          simpleUserInfoQuery({userId:res.data.data.author == null ? 0: res.data.data.author})
         .then(res=>{
           info.userInfo=res.data.data
-          if(info.userInfo.avatar==null){
+          if(info.userInfo.avatar===null || info.userInfo.avatar === ''){
             info.userInfo.avatar='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
           }
         })
-        }
         
         let text = res.data.data.content
         const regex = /<h[1-6]>(.*?)<\/h[1-6]>/g;
@@ -107,32 +79,25 @@ onMounted(() => {
           let href='#'+id
           //匹配成功则添加   
           if (matchText.startsWith('<h1>')) {
-            
             text = text.replace(matchText, matchText.replace('<h1', '<h1 id="' + id + '"'))
-            
           }
           else if (matchText.startsWith('<h2>')) {
-
             text = text.replace(matchText, matchText.replace('<h2', '<h2 id="' + id + '"'))
             style += 'margin-left:10px;'
           }
           else if (matchText.startsWith('<h3>')) {
-
             text = text.replace(matchText, matchText.replace('<h3', '<h3 id="' + id + '"'))
             style = 'margin-left:20px;'
           }
           else if (matchText.startsWith('<h4>')) {
-
             text = text.replace(matchText, matchText.replace('<h4', '<h4 id="' + id + '"'))
             style = 'margin-left:30px;'
           }
           else if (matchText.startsWith('<h5>')) {
-
             text = text.replace(matchText, matchText.replace('<h5', '<h5 id="' + id + '"'))
             style = 'margin-left:40px;'
           }
           else if (matchText.startsWith('<h6>')) {
-
             text = text.replace(matchText, matchText.replace('<h6', '<h6 id="' + id + '"'))
             style = 'margin-left:50px;'
           }
@@ -144,7 +109,6 @@ onMounted(() => {
           nodeTree.push(node)
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
-
         }
         res.data.data.content = text
         info.articleInfo = res.data.data
@@ -165,13 +129,12 @@ onMounted(() => {
           :size="32"
           class="mr-3"
           :src="info.userInfo.avatar"
+          style="vertical-align:text-bottom"
         />
-        
-      <span class="title text-large font-600 mr-3">
-        {{ info.articleInfo.title }}
-      </span>
-      
 
+      <el-text class="title">
+        {{ info.articleInfo.title }}
+      </el-text>
     </template>
     <el-descriptions :column="4" size="small" class="mt-4">
       <el-descriptions-item label="作者">{{info.userInfo.nickName}}</el-descriptions-item>
@@ -187,8 +150,8 @@ onMounted(() => {
   </el-page-header>
   <el-container>
     <el-affix :offset="60" style="max-width: 20%;">
-      <el-card >
-        <template #header>
+      <el-card v-if="nodeTree.length!=0">
+        <template #header >
           <div class="card-header">
             <span>文章目录</span>
           </div>
@@ -225,7 +188,7 @@ onMounted(() => {
 
 .title {
   /*color: #606266;*/ 
-  font-size: 2em;
+  font-size: 1.5em;
   font-weight: bold;
   word-wrap: break-word;
   line-height: 1;
@@ -249,6 +212,10 @@ a:visited {
 a:hover{
   font-size: large;
   color:black;
+}
+
+.el-page-header{
+  margin-top: 1em;
 }
 
 </style>
