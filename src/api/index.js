@@ -38,6 +38,11 @@ export function dictMapQuery(params){
      return http.get(`${admin}/admin/dict/getDictMapByDictCode`,params)
 }
 
+// 历史归档
+export function getHistory(){
+     return http.get(`${nest}/article/history`)
+}
+
 
 //用户信息获取
 export function simpleUserInfoQuery(params){

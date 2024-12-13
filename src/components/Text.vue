@@ -210,7 +210,7 @@ a:visited {
 }
 
 a:hover{
-  font-size: large;
+  /*font-size: large;*/
   color:black;
 }
 
