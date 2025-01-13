@@ -1,6 +1,8 @@
 <script setup>
 import Top from './components/Top.vue'
 import Foot from './components/Foot.vue'
+import CatTop from './components/CatTop.vue'
+import GoToTop from './components/GoToTop.vue';
 
 </script>
 
@@ -14,6 +16,9 @@ import Foot from './components/Foot.vue'
     <el-footer>
       <Foot></Foot>
     </el-footer>
+    <CatTop></CatTop>
+    <GoToTop></GoToTop>
+
   </el-container>
 </template>
 

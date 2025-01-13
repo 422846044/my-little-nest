@@ -130,7 +130,7 @@ function historyCheck(year, month) {
           <div style="margin-top: 1em;">
             <el-pagination v-model:current-page="info.pageInfo.pageNum" v-model:page-size="info.pageInfo.pageSize"
               :page-sizes="[1, 10, 20, 30, 50, 100]" size="default" :disabled="false" :background="true"
-              layout="total,sizes, prev, pager, next, jumper" :total="info.total" @size-change="handleSizeChange()"
+              layout="total,sizes, prev, pager, next, jumper" :total="info.total" @size-change= "handleSizeChange()"
               @current-change="handleCurrentChange()" />
           </div>
         </template>
