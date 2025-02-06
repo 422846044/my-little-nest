@@ -1,8 +1,6 @@
 <script setup>
 import Top from './components/Top.vue'
 import Foot from './components/Foot.vue'
-import CatTop from './components/CatTop.vue'
-import GoToTop from './components/GoToTop.vue';
 
 </script>
 
@@ -16,9 +14,21 @@ import GoToTop from './components/GoToTop.vue';
     <el-footer>
       <Foot></Foot>
     </el-footer>
-    <CatTop></CatTop>
-    <GoToTop></GoToTop>
-
+    <el-backtop :bottom="100">
+      
+      <div
+      style="
+      height: 100%;
+        width: 100%;
+        background-color: var(--el-bg-color-overlay);
+        box-shadow: var(--el-box-shadow-lighter);
+        text-align: center;
+        line-height: 40px;
+        color: #1989fa;
+      "
+    >
+    UP
+    </div></el-backtop>
   </el-container>
 </template>
 
