@@ -43,7 +43,7 @@ const props = defineProps({
                 <router-link :to="{ path: '/text', query: { id: info.id } }">
                     <el-container>
                         <div v-show="info.cover" style="margin-right: 20px;">
-                            <img :src="info.cover" style="border-radius: 4px;" />
+                            <img :src="info.cover" style="border-radius: 4px; width: 200px" />
                         </div>
 
                         <div class="text item">{{ info.summary }}</div>

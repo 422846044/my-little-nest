@@ -12,9 +12,9 @@ const routes = [
   { path: '/text', component: Text }
 ]  
   
-const router = createRouter({  
+const router = createRouter({
   history: createWebHistory(),  
   routes
-})  
+})
   
 export default router
