@@ -2,18 +2,19 @@
 import { useRoute } from 'vue-router';
 import { useDark,useToggle } from "@vueuse/core";
 import { Sunny,Moon } from '@element-plus/icons-vue';
+import { reactive } from 'vue';
 
 const route = useRoute();
 const isDark = useDark();
 
 const handleSelect = () => {}
 
-const toggleDark  = () => {console.log(111);useToggle(isDark)}
+const toggleDark  = useToggle(isDark)
 
 </script>
 
 <template>
-  <el-menu :default-active="route.path" class="el-menu-demo" mode="horizontal" :ellipsis="false"
+  <el-menu :default-active="route.path" class="el-menu-demo" mode="horizontal" :ellipsis="false" style="--el-menu-hover-bg-color:#545c64"
     background-color="#545c64"
     text-color="#fff"
     active-text-color="#ffd04b"
@@ -51,4 +52,5 @@ a {
   margin-right: 5px;
   font-size: 20px;
 }
+
 </style>
