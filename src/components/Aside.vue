@@ -47,7 +47,7 @@ const randomElement = getRandomElement(myArray);
 
 <template>
     <el-space direction="vertical">
-        <el-card class="box-card frosted-glass1" style="width: 250px; background-color: rgba(255, 255, 255, 0);">
+        <el-card class="box-card frosted-glass1" style="width: 250px;">
             <template #header>
                 <div class="card-header">
                     <span>分类</span>

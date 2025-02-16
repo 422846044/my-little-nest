@@ -25,7 +25,7 @@ const props = defineProps({
                 <template #header>
                     <div class="card-header">
                         <router-link :to="{ path: '/text', query: { id: info.id } }">
-                            <div class="card-title">{{ info.title }}</div>
+                            <el-text class="card-title">{{ info.title }}</el-text>
                         </router-link>
                         <div class="card-category">
                             分类：
@@ -46,7 +46,7 @@ const props = defineProps({
                             <img :src="info.cover" style="border-radius: 4px; width: 200px" />
                         </div>
 
-                        <div class="text item">{{ info.summary }}</div>
+                        <el-text style="align-self:baseline">{{ info.summary }}</el-text>
                     </el-container>
                 </router-link>
                 <div style="padding-top:1%;font-size: x-small;color:grey;"><el-icon>
