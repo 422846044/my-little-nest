@@ -95,7 +95,7 @@ const executeProcess = async () => {
     <el-card class="box-card">
       <template #header>
         <div class="card-header">
-          <span>MP4文件处理工具</span>
+          <span>MP4文件处理工具（将目录下的所有视频文件复制到指定目录）</span>
         </div>
       </template>
       

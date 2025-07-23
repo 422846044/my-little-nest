@@ -3,7 +3,7 @@ import Home from '../components/Home.vue'
 import About from '../components/About.vue'
 import Djc from '../components/Djc.vue'
 import Text from '../components/Text.vue'
-import Test from '../components/Test.vue'
+import CopyVideo from '../components/CopyVideo.vue'
   
 const routes = [  
   { path: '/home', component: Home },
@@ -11,7 +11,7 @@ const routes = [
   { path: '/about', component: About },
   { path: '/tools/djc', component: Djc },
   { path: '/text', component: Text },
-  { path: '/test', component: Test }
+  { path: '/tools/copyVideo', component: CopyVideo }
 ]  
   
 const router = createRouter({
