@@ -49,6 +49,12 @@ export function simpleUserInfoQuery(params){
      return http.get(`${admin}/user/getSimpleUserInfoByUserId`,params)
 }
 
+
+//上传nginx文件
+export function uploadNginx(type, file){
+     return http.put(`${nest}/nginx/update/file/replaceAll/${type}`,file)
+}
+
 // put 请求
 export function putSomeAPI(params){
      return http.put(`${resquest}/putSome.json`,params)
