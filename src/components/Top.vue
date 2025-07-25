@@ -28,6 +28,7 @@ const toggleDark  = useToggle(isDark)
       <template #title>工具</template>
       <el-menu-item index="/tools/djc">道聚城自动任务</el-menu-item>
       <el-menu-item index="/tools/copyVideo">提取视频</el-menu-item>
+      <el-menu-item index="/tools/uploadNginxFile">上传nginx代理</el-menu-item>
     </el-sub-menu>
     <el-menu-item index="/about">个人</el-menu-item>
     <el-menu-item index="">

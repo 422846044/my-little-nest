@@ -52,7 +52,7 @@ export function simpleUserInfoQuery(params){
 
 //上传nginx文件
 export function uploadNginx(type, file){
-     return http.put(`${nest}/nginx/update/file/replaceAll/${type}`,file)
+     return http.putForFile(`${nest}/nginx/update/file/replaceAll/${type}`,file)
 }
 
 // put 请求

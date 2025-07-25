@@ -32,6 +32,15 @@ const http ={
         if(params) config.params = params
         return request(config)
     },
+    putForFile(url,params){
+        const config = {
+            method: 'put',
+            url:url,
+            isFile: true
+        }
+        if(params) config.data = params
+        return request(config)
+    },
     delete(url,params){
         const config = {
             method: 'delete',

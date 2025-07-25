@@ -1,160 +1,128 @@
 <script setup>
 import { ref } from 'vue';
 import { ElMessage } from 'element-plus';
-import  UploadInstance from 'element-plus'
+import UploadInstance from 'element-plus'
 import { uploadNginx } from '../api'
 
-const sourceDirectory = ref(null);
-const outputDirectory = ref(null);
 const isProcessing = ref(false);
 const processStatus = ref('');
+const canUpload = ref(false);
+
+const radio = ref('0');
 
 
-const uploadRef = UploadInstance();
+
+const uploadRef = ref(UploadInstance);
 
 const submitUpload = async () => {
- if (!sourceDirectory.value) {
-    ElMessage.warning('请先选择源文件');
-    return;
-  }
 
   isProcessing.value = true;
   processStatus.value = '正在上传文件...';
+  uploadRef.value.submit()
 
+}
+
+
+function uploadFileReq(file) {
   try {
+    if (file.file.type !== 'application/x-zip-compressed') {
+      processStatus.value = '文件格式有误';
+      ElMessage.error('不支持当前格式的文件');
+      return;
+    }
 
-    uploadRef.submit()
-    processStatus.value = `处理完成！`;
-    ElMessage.success(processStatus.value);
+    let data = new FormData()
+    data.append('file', file.file)
+    uploadNginx(radio.value, data).then(res => {
+      if (res.data.code == 200) {
+        processStatus.value = `处理完成`;
+        ElMessage.success(processStatus.value);
+      } else {
+        processStatus.value = '处理过程中出错';
+        ElMessage.error(err.message);
+      }
+    })
+
   } catch (err) {
     processStatus.value = '处理过程中出错';
-    ElMessage.error(err.message);
   } finally {
     isProcessing.value = false;
   }
 
 }
 
-// 处理目录选择
-const handleSourceSelect = async () => {
-  try {
-    const dirHandle = await window.showDirectoryPicker();
-    sourceDirectory.value = dirHandle;
-    processStatus.value = '';
-  } catch (err) {
-    if (err.name !== 'AbortError') {
-      ElMessage.error('选择源目录失败');
-    }
-  }
-};
-
-// 递归处理目录
-async function* getFilesRecursively(dirHandle) {
-  for await (const entry of dirHandle.values()) {
-    if (entry.kind === 'directory') {
-      yield* getFilesRecursively(entry);
-    } else if (entry.kind === 'file' && entry.name.toLowerCase().endsWith('.mp4')) {
-      yield { file: entry, path: entry.name };
-    }
-  }
+function onExceed() {
+  ElMessage.error('只能上传一个文件');
 }
 
-function uploadFileReq(){
-  uploadNginx
+function onProgress() {
+  ElMessage.info('正在上传');
 }
 
-// 执行处理
-const executeProcess = async () => {
-  if (!sourceDirectory.value || !outputDirectory.value) {
-    ElMessage.warning('请先选择源目录和输出目录');
-    return;
-  }
+function onSuccess() {
+  ElMessage.success('上传成功');
+}
 
-  isProcessing.value = true;
-  processStatus.value = '正在处理文件...';
-  let processedCount = 0;
+function onError() {
+  ElMessage.error('上传失败');
+}
 
-  try {
-    for await (const { file, path } of getFilesRecursively(sourceDirectory.value)) {
-      // 创建与文件同名的目录
-      const dirName = path.slice(0, -4); // 移除.mp4后缀
-      let newDirHandle;
-      try {
-        newDirHandle = await outputDirectory.value.getDirectoryHandle(dirName, { create: true });
-      } catch (err) {
-        ElMessage.error(`创建目录 ${dirName} 失败`);
-        continue;
-      }
+function onChange() {
+  canUpload.value = true
+}
 
-      // 复制文件
-      try {
-        const fileData = await file.getFile();
-        const newFileHandle = await newDirHandle.getFileHandle(file.name, { create: true });
-        const writable = await newFileHandle.createWritable();
-        await writable.write(fileData);
-        await writable.close();
-        processedCount++;
-      } catch (err) {
-        ElMessage.error(`处理文件 ${file.name} 失败`);
-      }
-    }
+function onRemove() {
+  canUpload.value = false
+}
+const fn=(e)=>{
+  console.log(e);
+}
 
-    processStatus.value = `处理完成！共处理 ${processedCount} 个文件`;
-    ElMessage.success(processStatus.value);
-  } catch (err) {
-    processStatus.value = '处理过程中出错';
-    ElMessage.error(err.message);
-  } finally {
-    isProcessing.value = false;
-  }
-};
 </script>
 
 <template>
-  <div class="container">
-    <el-card class="box-card">
+  <div class="container" style="width: 30%;">
+    <el-card class="box-card" >
       <template #header>
         <div class="card-header">
-          <span>MP4文件处理工具（将目录下的所有视频文件复制到指定目录）</span>
+          <span>{{'原型图更新'}}</span>
         </div>
       </template>
-      
 
-      <el-upload
-    ref="uploadRef"
-    class="upload-demo"
-    action="#"
-    :auto-upload="false"
-    :http-request="uploadFileReq"
-      >
 
-      <div class="input-group">
-        <span class="label">选择文件：</span>
-        <div class="path-display">
-          {{ sourceDirectory ? '已选择文件' : '未选择文件' }}
-        </div>
-        <el-button type="primary" >
-          选择文件
-        </el-button>
+      <div style="margin-bottom: 1em;">
+        <el-radio-group v-model="radio" @change="fn">
+          <el-radio label="0" border>小程序</el-radio>
+          <el-radio label="1" border>后台</el-radio>
+        </el-radio-group>
       </div>
 
-      <div class="action-group">
-        <el-button 
-          type="success" 
-          :disabled="!sourceDirectory || isProcessing"
-          :loading="isProcessing"
-          @click="submitUpload"
-        >
-          {{ isProcessing ? '处理中...' : '执行处理' }}
+      <el-upload ref="uploadRef" class="upload-demo" action="#" :limit="1" :auto-upload="false"
+        :http-request="uploadFileReq" :on-exceed="onExceed" :on-progress="onProgress" :on-success="onSuccess"
+        :on-error="onError" :on-change="onChange" :on-remove="onRemove">
+
+        <template #trigger>
+          <div>
+            <el-button type="primary">
+              选择文件
+            </el-button>
+          </div>
+        </template>
+
+        <el-button class="ml-3" type="success" :disabled="!canUpload || isProcessing" :loading="isProcessing"
+          @click="submitUpload">
+          {{ isProcessing ? '上传中...' : '上传文件' }}
         </el-button>
-      </div>
+      </el-upload>
 
       <div v-if="processStatus" :class="['status', { 'processing': isProcessing }]">
         {{ processStatus }}
       </div>
 
+      <div v-if="processStatus == '处理完成'" :class="['status', { 'processing': isProcessing }]">
+        <el-link type="primary" :href="radio == '0' ? 'http://zhongyingjie.top/axure' : 'http://zhongyingjie.top/hyht'" target="_blank">前往查看</el-link>
+      </div>
 
-      </el-upload>
     </el-card>
   </div>
 </template>
@@ -203,6 +171,10 @@ const executeProcess = async () => {
   border-radius: 4px;
   text-align: center;
   background-color: var(--el-fill-color-lighter);
+}
+
+.ml-3 {
+  margin-left: .75rem;
 }
 
 .processing {
