@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="zh-cn">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="src/assets/logo.jpg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
     <title>个人小窝</title>
     <style>
       /* 修改垂直滚动条 */
@@ -45,6 +45,99 @@ body{
     margin-inline-end: 0px;
     font-weight: bold;
 } 
+
+/* 移动端全局优化 */
+@media (max-width: 768px) {
+  /* 移动端滚动条优化 */
+  ::-webkit-scrollbar {
+    width: 3px;
+  }
+  
+  /* Element Plus 组件移动端优化 */
+  .el-container {
+    flex-direction: column !important;
+  }
+  
+  .el-pagination {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .el-pagination .el-pager li {
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+    font-size: 12px;
+  }
+  
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next {
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+  
+  .el-card {
+    margin: 5px 0;
+  }
+  
+  .el-card__header {
+    padding: 15px;
+  }
+  
+  .el-card__body {
+    padding: 15px;
+  }
+  
+  .el-tag {
+    margin: 2px;
+    font-size: 11px;
+  }
+  
+  .el-button {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+  
+  .el-input__inner {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .el-card__header {
+    padding: 10px;
+  }
+  
+  .el-card__body {
+    padding: 10px;
+  }
+  
+  .el-pagination .el-pager li {
+    min-width: 24px;
+    height: 24px;
+    line-height: 24px;
+    font-size: 11px;
+  }
+  
+  .el-pagination .btn-prev,
+  .el-pagination .btn-next {
+    min-width: 24px;
+    height: 24px;
+    line-height: 24px;
+  }
+  
+  .el-tag {
+    font-size: 10px;
+    height: 20px;
+    line-height: 20px;
+  }
+  
+  .el-button {
+    font-size: 11px;
+    padding: 6px 10px;
+  }
+}
 
     </style>
   </head>
