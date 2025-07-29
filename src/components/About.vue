@@ -14,11 +14,11 @@ const userInfo = reactive({
   name: '淡风无痕',
   avatar: '/src/assets/logo.jpg',
   title: '全栈开发工程师',
-  location: '江西·南昌',
+  location: '江西·赣州',
   joinDate: '2024年加入',
   bio: '热爱技术，专注于前端开发和用户体验设计。喜欢分享技术心得，记录生活点滴。',
-  email: 'developer@example.com',
-  website: 'https://zhongyingjie.top'
+  email: '422846044@qq.com',
+  website: 'http://zhongyingjie.top'
 });
 
 // 统计数据
@@ -49,11 +49,15 @@ const activities = [
 
 // 社交链接
 const socialLinks = [
-  { name: 'GitHub', url: 'https://github.com', icon: 'link', color: '#333' },
+  { name: 'GitHub', url: 'https://github.com/422846044', icon: 'link', color: '#333' },
   { name: '掘金', url: 'https://juejin.cn', icon: 'link', color: '#1e80ff' },
   { name: 'CSDN', url: 'https://csdn.net', icon: 'link', color: '#fc5531' },
   { name: '知乎', url: 'https://zhihu.com', icon: 'link', color: '#0084ff' }
 ];
+
+function openLink(url) {
+  window.open(url, '_blank');
+}
 </script>
 
 <template>
@@ -188,9 +192,20 @@ const socialLinks = [
             :key="social.name"
             class="social-btn"
             size="large"
-            @click="window.open(social.url, '_blank')"
+            @click="openLink(social.url)"
           >
-            <el-icon><Link /></el-icon>
+            <span class="social-icon" v-if="social.name === 'GitHub'">
+              <svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M511.6 76.3C264.6 76.3 64 277.5 64 525.2c0 198.1 128.3 366.2 306.2 425.7 22.4 4.2 30.6-9.7 30.6-21.5 0-10.6-.4-45.5-.6-82.5-124.6 27.1-151-53.2-151-53.2-20.4-52-49.8-65.8-49.8-65.8-40.7-27.8 3.1-27.2 3.1-27.2 45 3.2 68.7 46.2 68.7 46.2 40 68.6 104.9 48.8 130.5 37.3 4-29 15.6-48.8 28.4-60-99.5-11.3-204.2-49.7-204.2-221.3 0-48.9 17.5-88.9 46.2-120.2-4.6-11.3-20-56.8 4.4-118.5 0 0 37.6-12.1 123.2 45.9 35.7-9.9 74-14.9 112.1-15.1 38 .2 76.4 5.2 112.1 15.1 85.5-58 123.1-45.9 123.1-45.9 24.5 61.7 9.1 107.2 4.5 118.5 28.7 31.3 46.1 71.3 46.1 120.2 0 171.9-104.8 209.9-204.6 221 16 13.8 30.2 41.1 30.2 82.8 0 59.8-.5 108.1-.5 122.8 0 11.9 8 25.9 30.7 21.5C831.8 891.2 960 723.2 960 525.2c0-247.7-200.6-448.9-448.4-448.9z"/></svg>
+            </span>
+            <span class="social-icon" v-else-if="social.name === '掘金'">
+              <svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820.5c-205.2 0-372.5-167.3-372.5-372.5S306.8 139.5 512 139.5 884.5 306.8 884.5 512 717.2 884.5 512 884.5zm-44.8-222.7l-144.7-144.7 144.7-144.7 44.8 44.8-99.9 99.9 99.9 99.9-44.8 44.8zm89.6 0l-44.8-44.8 99.9-99.9-99.9-99.9 44.8-44.8 144.7 144.7-144.7 144.7z"/></svg>
+            </span>
+            <span class="social-icon" v-else-if="social.name === 'CSDN'">
+              <svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820.5c-205.2 0-372.5-167.3-372.5-372.5S306.8 139.5 512 139.5 884.5 306.8 884.5 512 717.2 884.5 512 884.5zm-44.8-222.7l-144.7-144.7 144.7-144.7 44.8 44.8-99.9 99.9 99.9 99.9-44.8 44.8zm89.6 0l-44.8-44.8 99.9-99.9-99.9-99.9 44.8-44.8 144.7 144.7-144.7 144.7z"/></svg>
+            </span>
+            <span class="social-icon" v-else-if="social.name === '知乎'">
+              <svg width="20" height="20" viewBox="0 0 1024 1024" fill="currentColor"><path d="M512 64C264.6 64 64 264.6 64 512s200.6 448 448 448 448-200.6 448-448S759.4 64 512 64zm0 820.5c-205.2 0-372.5-167.3-372.5-372.5S306.8 139.5 512 139.5 884.5 306.8 884.5 512 717.2 884.5 512 884.5zm-44.8-222.7l-144.7-144.7 144.7-144.7 44.8 44.8-99.9 99.9 99.9 99.9-44.8 44.8zm89.6 0l-44.8-44.8 99.9-99.9-99.9-99.9 44.8-44.8 144.7 144.7-144.7 144.7z"/></svg>
+            </span>
             {{ social.name }}
           </el-button>
         </div>
@@ -461,6 +476,12 @@ const socialLinks = [
 .social-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.social-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 8px;
 }
 
 /* 移动端适配 */
