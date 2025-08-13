@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'  
-import Home from '../components/Home.vue'
-import About from '../components/About.vue'
-import Djc from '../components/Djc.vue'
-import Text from '../components/Text.vue'
-import CopyVideo from '../components/CopyVideo.vue'
-import UploadNginxFile from '../components/UploadNginxFile.vue'
+const Home = () => import('../components/Home.vue')
+const About = () =>  import('../components/About.vue')
+const Djc = () =>  import('../components/Djc.vue')
+const Text = () =>  import('../components/Text.vue')
+const CopyVideo = () =>  import('../components/CopyVideo.vue')
+const UploadNginxFile = () =>  import('../components/UploadNginxFile.vue')
   
 const routes = [  
   { path: '/home', component: Home },
