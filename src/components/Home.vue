@@ -39,7 +39,7 @@ checkScreenSize();
 
 async function getDict(code) {
   let dictData = {};
-  await dictMapQuery({ dictCode: code })
+  await dictMapQuery(code)
     .then(res => {
       if (res.data.success == true) {
         dictData = res.data.data

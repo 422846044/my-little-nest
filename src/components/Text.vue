@@ -37,7 +37,7 @@ let id = route.query.id
 
 async function getDict(code) {
   let dictData = {};
-  await dictMapQuery({ dictCode: code })
+  await dictMapQuery(code)
     .then(res => {
       if (res.data.success == true) {
         dictData = res.data.data
@@ -54,7 +54,7 @@ onMounted(async () => {
   articleInfoQuery({ id: id })
     .then(res => {
       if (res.data.success == true) {
-          simpleUserInfoQuery({userId:res.data.data.author == null ? 0: res.data.data.author})
+          simpleUserInfoQuery(res.data.data.author == null ? 0: res.data.data.author)
         .then(res=>{
           info.userInfo=res.data.data
           if(info.userInfo.avatar===null || info.userInfo.avatar === ''){

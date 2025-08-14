@@ -4,7 +4,7 @@ import http from '../utils/http'
  *  @param '/testIp'代表vue-cil中config，index.js中配置的代理
  */
  let nest = import.meta.env.VITE_BASE_URL
- let admin = import.meta.env.VITE_BASE_ADMIN_URL
+ //let admin = import.meta.env.VITE_BASE_ADMIN_URL
 
  //道聚城日志查询
 export function djcTaskQuery(params){
@@ -35,7 +35,8 @@ export function articleInfoQuery(params){
 
 //数据字典表查询
 export function dictMapQuery(params){
-     return http.get(`${admin}/dict/getDictMapByDictCode`,params)
+     console.log(params)
+     return http.get(`${nest}/dataDict/map/${params}`)
 }
 
 // 历史归档
@@ -46,7 +47,7 @@ export function getHistory(){
 
 //用户信息获取
 export function simpleUserInfoQuery(params){
-     return http.get(`${admin}/user/getSimpleUserInfoByUserId`,params)
+     return http.get(`${nest}/user/simpleInfo/${params}`)
 }
 
 

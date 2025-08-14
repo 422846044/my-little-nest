@@ -5,6 +5,7 @@ const Djc = () =>  import('../components/Djc.vue')
 const Text = () =>  import('../components/Text.vue')
 const CopyVideo = () =>  import('../components/CopyVideo.vue')
 const UploadNginxFile = () =>  import('../components/UploadNginxFile.vue')
+const NotFound = () =>  import('../components/NotFound.vue')
   
 const routes = [  
   { path: '/home', component: Home },
@@ -13,7 +14,14 @@ const routes = [
   { path: '/tools/djc', component: Djc },
   { path: '/text', component: Text },
   { path: '/tools/copyVideo', component: CopyVideo },
-  { path: '/tools/uploadNginxFile', component: UploadNginxFile }
+  { path: '/tools/uploadNginxFile', component: UploadNginxFile },
+  {
+    path: '/NotFound',
+    component: NotFound,
+    meta: {
+      needLogin: false
+    }
+  }
 ]  
   
 const router = createRouter({

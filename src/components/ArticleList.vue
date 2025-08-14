@@ -34,13 +34,9 @@ const props = defineProps({
                                     <el-icon><Folder /></el-icon>
                                     {{ category[info.category] }}
                                 </el-tag>
-                                <span class="article-time">
-                                    <el-icon><Clock /></el-icon>
-                                    {{ info.createTime }}
-                                </span>
                             </div>
                             <div class="meta-right" v-if="info.tags.length > 0">
-                                <el-space wrap size="small">
+                                <el-space wrap size="small" style="padding-top: 6px;">
                                     <el-tag 
                                         v-for="(item,index) in info.tags" 
                                         :key="index" 
