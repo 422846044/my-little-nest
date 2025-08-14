@@ -41,7 +41,7 @@ service.interceptors.response.use(response => {
     setTimeout(() => {
         hideLoading()
     }, 200)
-    if(!response.data.success){
+    if(response.data.code!=200){
         ElMessage.error(response.data.message)
     }
     return response
