@@ -1,5 +1,6 @@
 <script setup>
-import { toRefs, ref, reactive } from 'vue';
+import { toRefs, ref, reactive,h } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   User, Location, Calendar, Trophy, Star,
   Message, Plus, Document, View, ChatDotRound, Bell, Edit, Link
@@ -17,7 +18,7 @@ const userInfo = reactive({
   location: '江西·赣州',
   joinDate: '2024年加入',
   bio: '热爱技术，专注于前端开发和用户体验设计。喜欢分享技术心得，记录生活点滴。',
-  email: '422846044@qq.com',
+  email: 'zhongyingjie1019@163.com',
   website: 'http://zhongyingjie.top'
 });
 
@@ -58,6 +59,29 @@ const socialLinks = [
 function openLink(url) {
   window.open(url, '_blank');
 }
+
+function openEmail(url){
+  ElMessageBox({
+    title: '邮箱',
+    message: h('p', null, [
+      h('span', null, url)
+    ]),
+    showCancelButton: true,
+    confirmButtonText: '复制',
+    cancelButtonText: '取消',
+    beforeClose: (action, instance, done) => {
+      if (action === 'confirm') {
+        navigator.clipboard.writeText(url)
+      }
+      done()
+    },
+  }).then(() => {
+    ElMessage({
+      type: 'info',
+      message: `复制成功`,
+    })
+  })
+}
 </script>
 
 <template>
@@ -87,7 +111,7 @@ function openLink(url) {
             </div>
             <p class="user-bio">{{ userInfo.bio }}</p>
             <div class="contact-info">
-              <el-button type="primary" size="default" class="contact-btn">
+              <el-button type="primary" size="default" class="contact-btn" @click="openEmail(userInfo.email)">
                 <el-icon><Message /></el-icon>
                 联系我
               </el-button>
