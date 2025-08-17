@@ -13,7 +13,7 @@ var props = defineProps({
 // 个人信息数据
 const userInfo = reactive({
   name: '淡风无痕',
-  avatar: '/src/assets/logo.jpg',
+  avatar: 'http://cdn.zhongyingjie.top/public/static/admin/logo.jpg',
   title: '全栈开发工程师',
   location: '江西·赣州',
   joinDate: '2024年加入',

@@ -20,7 +20,7 @@ const toggleDark  = useToggle(isDark)
     active-text-color="#ffd04b"
     @select="handleSelect" router >
     <el-menu-item index="" class="logo-item">
-      <img class="logo-img" src="/src/assets/logo.jpg" alt="logo" />
+      <img class="logo-img" src="http://cdn.zhongyingjie.top/public/static/admin/logo.jpg" alt="logo" />
     </el-menu-item>
     <el-menu-item index="/home" class="nav-item">主页</el-menu-item>
     <div class="flex-grow" />
@@ -64,10 +64,12 @@ a {
 }
 
 .logo-img {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   object-fit: cover;
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 /* 切换按钮样式 */
