@@ -1,7 +1,7 @@
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { articleInfoQuery,simpleUserInfoQuery,dictMapQuery } from '../api'
+import { articleInfoQuery, simpleUserInfoQuery, dictMapQuery } from '../api'
 import { ArrowLeft } from '@element-plus/icons-vue'
 const router = useRouter()
 const goBack = () => {
@@ -21,8 +21,8 @@ let info = reactive({
     createTime: ''
   },
   userInfo: {
-    nickName:'',
-    avatar:''
+    nickName: '',
+    avatar: ''
   }
 })
 
@@ -50,33 +50,33 @@ var nodeTree = reactive([])
 onMounted(async () => {
   //获取字典信息
   dict.category = await getDict('wzfl')
-  dict.tags =  await getDict('wzbq')
+  dict.tags = await getDict('wzbq')
   articleInfoQuery({ id: id })
     .then(res => {
       if (res.data.success == true) {
-          simpleUserInfoQuery(res.data.data.author == null ? 0: res.data.data.author)
-        .then(res=>{
-          info.userInfo=res.data.data
-          if(info.userInfo.avatar===null || info.userInfo.avatar === ''){
-            info.userInfo.avatar='https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
-          }
-        })
-        
+        simpleUserInfoQuery(res.data.data.author == null ? 0 : res.data.data.author)
+          .then(res => {
+            info.userInfo = res.data.data
+            if (info.userInfo.avatar === null || info.userInfo.avatar === '') {
+              info.userInfo.avatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+            }
+          })
+
         let text = res.data.data.content
         const regex = /<h[1-6]>(.*?)<\/h[1-6]>/g;
         let dirId = 1
         var match
-        
+
         while ((match = regex.exec(text)) !== null) {
           let matchText = match[0]
           let node = {}
           let divEl = document.createElement('div')
           let aEl = document.createElement('a')
-          aEl.innerText=match[1]
-          node.info=match[1]
+          aEl.innerText = match[1]
+          node.info = match[1]
           let style = ''
-          let id = 'articleDir'+dirId
-          let href='#'+id
+          let id = 'articleDir' + dirId
+          let href = '#' + id
           //匹配成功则添加   
           if (matchText.startsWith('<h1>')) {
             text = text.replace(matchText, matchText.replace('<h1', '<h1 id="' + id + '"'))
@@ -102,17 +102,22 @@ onMounted(async () => {
             style = 'margin-left:50px;'
           }
           aEl.style = style
-          aEl.href=href
-          node.href=href
-          node.style=style
+          aEl.href = href
+          node.href = href
+          node.style = style
           divEl.appendChild(aEl)
+          
+          node.children = [node, node]
+          const node1 = node
+          node.children.push(node1)
           nodeTree.push(node)
+          console.log(nodeTree)
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
         }
         res.data.data.content = text
         info.articleInfo = res.data.data
-        
+
       }
     })
   //获取作者信息
@@ -120,24 +125,21 @@ onMounted(async () => {
 
 })
 
+const containerRef = ref(null)
+
 </script>
 
 <template>
   <el-page-header id="text-page-header" :icon="ArrowLeft" title="上一页" @back="goBack">
     <template #content>
-        <el-avatar
-          :size="32"
-          class="mr-3"
-          :src="info.userInfo.avatar"
-          style="vertical-align:text-bottom"
-        />
+      <el-avatar :size="32" class="mr-3" :src="info.userInfo.avatar" style="vertical-align:text-bottom" />
 
       <el-text class="title">
         {{ info.articleInfo.title }}
       </el-text>
     </template>
     <el-descriptions :column="4" size="small" class="mt-4">
-      <el-descriptions-item label="作者">{{info.userInfo.nickName}}</el-descriptions-item>
+      <el-descriptions-item label="作者">{{ info.userInfo.nickName }}</el-descriptions-item>
       <el-descriptions-item label="分类">{{ dict.category[info.articleInfo.category] }}</el-descriptions-item>
       <el-descriptions-item label="标签">
         <template v-for="tagCode in info.articleInfo.tags">
@@ -150,25 +152,44 @@ onMounted(async () => {
   </el-page-header>
   <el-container>
     <el-affix :offset="60" style="max-width: 20%;">
-      <el-card v-if="nodeTree.length!=0">
-        <template #header >
+      <el-card v-if="nodeTree.length != 0">
+        <template #header>
           <div class="card-header">
             <span>文章目录</span>
           </div>
         </template>
-        <nav id="dirNav" v-for="node in nodeTree">
-          <div >
+        <!-- <nav id="dirNav" v-for="node in nodeTree">
+          <div>
             <a :href="node.href" :style="node.style">{{ node.info }}</a>
           </div>
-        </nav>
+        </nav> -->
+        <el-anchor
+    :container="containerRef"
+    direction="vertical"
+    type="underline"
+    :offset="60">
+    <el-anchor-link v-for="node in nodeTree" :href="node.href" :title="node.info">
+      <template v-if="node.children.length" #sub-link>
+        <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info">
+          <template v-if="node.children.length" #sub-link>
+            <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info" >
+              <template v-if="node.children.length" #sub-link>
+            <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info" >
+            
+            </el-anchor-link>
+          </template>
+            </el-anchor-link>
+          </template>
+        </el-anchor-link> 
+      </template>
+    </el-anchor-link> 
+    </el-anchor>
       </el-card>
     </el-affix>
+    
 
-
-
-
-    <el-main>
-      <el-text id="articleText" size="large" v-html="info.articleInfo.content">
+    <el-main >
+      <el-text :ref="containerRef"  id="articleText" size="large" v-html="info.articleInfo.content">
       </el-text>
     </el-main>
   </el-container>
@@ -176,6 +197,11 @@ onMounted(async () => {
 
 
 <style scoped>
+
+.clearTop{
+  padding-top: 160px;
+  margin-top: -160px;
+}
 .read-the-docs {
   color: #888;
 }
@@ -187,7 +213,7 @@ onMounted(async () => {
 }
 
 .title {
-  /*color: #606266;*/ 
+  /*color: #606266;*/
   font-size: 1.5em;
   font-weight: bold;
   word-wrap: break-word;
@@ -197,7 +223,7 @@ onMounted(async () => {
 
 a {
   display: inline-block;
-   width: 100%;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -209,13 +235,12 @@ a:visited {
   background-color: transparent;
 }
 
-a:hover{
+a:hover {
   /*font-size: large;*/
-  color:black;
+  color: black;
 }
 
-.el-page-header{
+.el-page-header {
   margin-top: 1em;
 }
-
 </style>
