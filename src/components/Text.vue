@@ -3,6 +3,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { articleInfoQuery, simpleUserInfoQuery, dictMapQuery } from '../api'
 import { ArrowLeft } from '@element-plus/icons-vue'
+import MyRecursiveComponent from './MyRecursiveComponent.vue'
 const router = useRouter()
 const goBack = () => {
   router.push('/home')
@@ -106,15 +107,14 @@ onMounted(async () => {
           node.href = href
           node.style = style
           divEl.appendChild(aEl)
-          
-          node.children = [node, node]
-          const node1 = node
-          node.children.push(node1)
+
+          node.children = []
           nodeTree.push(node)
           console.log(nodeTree)
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
         }
+        nodeTree[0].children = [{ info: '211', href: '22', children: [{ info: '1211', href: '22', children: [] }] }, { info: '231', href: '22', children: [] }]
         res.data.data.content = text
         info.articleInfo = res.data.data
 
@@ -163,33 +163,19 @@ const containerRef = ref(null)
             <a :href="node.href" :style="node.style">{{ node.info }}</a>
           </div>
         </nav> -->
-        <el-anchor
-    :container="containerRef"
-    direction="vertical"
-    type="underline"
-    :offset="60">
-    <el-anchor-link v-for="node in nodeTree" :href="node.href" :title="node.info">
-      <template v-if="node.children.length" #sub-link>
-        <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info">
-          <template v-if="node.children.length" #sub-link>
-            <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info" >
-              <template v-if="node.children.length" #sub-link>
-            <el-anchor-link v-for="node in node.children" :href="node.href" :title="node.info" >
-            
-            </el-anchor-link>
-          </template>
-            </el-anchor-link>
-          </template>
-        </el-anchor-link> 
-      </template>
-    </el-anchor-link> 
-    </el-anchor>
+        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60">
+          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
+          <!-- <el-anchor-link v-for="node in nodeTree" :href="node.href" :title="node.info">
+            <template #sub-link>
+              <MyRecursiveComponent v-if="node.children && node.children.length" :items="node.children">
+            </MyRecursiveComponent>
+            </template>
+          </el-anchor-link> -->
+        </el-anchor>
       </el-card>
     </el-affix>
-    
-
-    <el-main >
-      <el-text :ref="containerRef"  id="articleText" size="large" v-html="info.articleInfo.content">
+    <el-main>
+      <el-text :ref="containerRef" id="articleText" size="large" v-html="info.articleInfo.content">
       </el-text>
     </el-main>
   </el-container>
@@ -197,11 +183,11 @@ const containerRef = ref(null)
 
 
 <style scoped>
-
-.clearTop{
+.clearTop {
   padding-top: 160px;
   margin-top: -160px;
 }
+
 .read-the-docs {
   color: #888;
 }
