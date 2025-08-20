@@ -1,12 +1,47 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { articleInfoQuery, simpleUserInfoQuery, dictMapQuery } from '../api'
-import { ArrowLeft } from '@element-plus/icons-vue'
+import { ArrowLeft, Menu } from '@element-plus/icons-vue'
 import MyRecursiveComponent from './MyRecursiveComponent.vue'
+
 const router = useRouter()
 const goBack = () => {
   router.push('/home')
+}
+
+// 移动端目录显示状态
+const showMobileMenu = ref(false)
+
+// 检测是否为移动端
+const isMobile = ref(false)
+
+// 更新移动端状态
+const descriptionsColumn = ref(4)
+const descriptionsDirection = ref('horizontal')
+const updateMobileStatus = () => {
+  const width = window.innerWidth
+  isMobile.value = width <= 768
+  if (width <= 768) {
+    descriptionsColumn.value = 1
+    descriptionsDirection.value = 'vertical'
+  } else if (width <= 1200) {
+    descriptionsColumn.value = 2
+    descriptionsDirection.value = 'horizontal'
+  } else {
+    descriptionsColumn.value = 4
+    descriptionsDirection.value = 'horizontal'
+  }
+}
+
+// 切换移动端目录显示
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value
+}
+
+// 关闭移动端目录
+const closeMobileMenu = () => {
+  showMobileMenu.value = false
 }
 
 
@@ -33,6 +68,8 @@ let dict = reactive({
   tags: {}
 })
 
+// tagsText removed
+
 const route = useRoute()
 let id = route.query.id
 
@@ -49,6 +86,12 @@ async function getDict(code) {
 
 var nodeTree = reactive([])
 onMounted(async () => {
+  // 初始化移动端状态
+  updateMobileStatus()
+  
+  // 添加窗口大小变化监听器
+  window.addEventListener('resize', updateMobileStatus)
+  
   //获取字典信息
   dict.category = await getDict('wzfl')
   dict.tags = await getDict('wzbq')
@@ -174,6 +217,11 @@ onMounted(async () => {
 
 const containerRef = ref(null)
 
+// 组件卸载时清理事件监听器
+onUnmounted(() => {
+  window.removeEventListener('resize', updateMobileStatus)
+})
+
 </script>
 
 <template>
@@ -185,7 +233,7 @@ const containerRef = ref(null)
         {{ info.articleInfo.title }}
       </el-text>
     </template>
-    <el-descriptions :column="4" size="small" class="mt-4">
+    <el-descriptions :column="descriptionsColumn" :direction="descriptionsDirection" size="small" class="mt-4">
       <el-descriptions-item label="作者">{{ info.userInfo.nickName }}</el-descriptions-item>
       <el-descriptions-item label="分类">{{ dict.category[info.articleInfo.category] }}</el-descriptions-item>
       <el-descriptions-item label="标签">
@@ -197,8 +245,18 @@ const containerRef = ref(null)
       <el-descriptions-item label="时间">{{ info.articleInfo.createTime }}</el-descriptions-item>
     </el-descriptions>
   </el-page-header>
-  <el-container>
-    <el-affix :offset="60" style="max-width: 20%;">
+  
+  <!-- 移动端目录按钮 -->
+  <div class="mobile-menu-button" v-if="isMobile && nodeTree.length > 0">
+    <el-button type="primary" @click="toggleMobileMenu" :icon="Menu" circle></el-button>
+  </div>
+
+  <!-- 移动端目录遮罩层 -->
+  <div class="mobile-overlay" v-if="isMobile && showMobileMenu" @click="closeMobileMenu"></div>
+
+  <el-container class="text-container">
+    <!-- 桌面端目录 -->
+    <div class="desktop-menu">
       <el-card v-if="nodeTree.length != 0">
         <template #header>
           <div class="card-header">
@@ -209,8 +267,24 @@ const containerRef = ref(null)
           <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
         </el-anchor>
       </el-card>
-    </el-affix>
-    <el-main>
+    </div>
+
+    <!-- 移动端目录 -->
+    <div class="mobile-menu" v-if="isMobile && showMobileMenu && nodeTree.length > 0">
+      <el-card>
+        <template #header>
+          <div class="card-header">
+            <span>文章目录</span>
+            <el-button type="text" @click="closeMobileMenu" size="small">×</el-button>
+          </div>
+        </template>
+        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60">
+          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
+        </el-anchor>
+      </el-card>
+    </div>
+
+    <el-main class="main-content">
       <el-text :ref="containerRef" id="articleText" size="large" v-html="info.articleInfo.content">
       </el-text>
     </el-main>
@@ -264,5 +338,146 @@ a:hover {
 
 .el-page-header {
   margin-top: 1em;
+}
+
+/* 桌面端保持 Element Plus 默认换行行为 */
+
+/* 移动端 descriptions 样式优化 */
+@media (max-width: 768px) {
+  :deep(.el-descriptions__body) {
+    width: 100%;
+  }
+  :deep(.el-descriptions__cell) {
+    padding: 6px 8px;
+  }
+  :deep(.el-descriptions__label) {
+    white-space: nowrap;
+  }
+  :deep(.el-descriptions__content) {
+    white-space: normal;
+    word-break: break-word;
+  }
+}
+
+/* 移动端适配样式 */
+.text-container {
+  position: relative;
+}
+
+.desktop-menu {
+  max-width: 20%;
+  position: sticky;
+  top: 80px;
+  height: fit-content;
+}
+
+/* 移动端隐藏桌面端目录 */
+@media (max-width: 768px) {
+  .desktop-menu {
+    display: none;
+  }
+}
+
+.mobile-menu-button {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100vh;
+  background-color: white;
+  z-index: 1001;
+  overflow-y: auto;
+  box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+}
+
+.main-content {
+  width: 100%;
+  padding: 20px;
+}
+
+/* 标签容器换行样式（桌面端单行） */
+.tags-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+.tag-item {
+  margin: 0 6px 0 0;
+}
+:deep(.tags-container .el-tag) {
+  padding: 0 6px;
+  height: 22px;
+  line-height: 22px;
+}
+
+/* 桌面端标签单行省略并保持与其他项对齐 */
+.tags-text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 移动端标签容器允许换行 */
+@media (max-width: 768px) {
+  .tags-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    white-space: normal;
+    overflow: visible;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* 移动端响应式样式 */
+@media (max-width: 768px) {
+  .el-descriptions {
+    font-size: 12px;
+  }
+  
+  .el-descriptions-item {
+    padding: 8px 4px;
+  }
+  
+  .title {
+    font-size: 1.2em;
+    margin-left: 0.5em;
+  }
+  
+  .main-content {
+    padding: 10px;
+  }
+  
+  #articleText {
+    font-size: 14px;
+    line-height: 1.6;
+  }
 }
 </style>

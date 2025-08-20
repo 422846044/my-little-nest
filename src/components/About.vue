@@ -12,12 +12,12 @@ var props = defineProps({
 
 // 个人信息数据
 const userInfo = reactive({
-  name: '淡风无痕',
+  name: 'Kong',
   avatar: 'http://cdn.zhongyingjie.top/public/static/admin/logo.jpg',
-  title: '全栈开发工程师',
+  title: '后端开发工程师',
   location: '江西·赣州',
-  joinDate: '2024年加入',
-  bio: '热爱技术，专注于前端开发和用户体验设计。喜欢分享技术心得，记录生活点滴。',
+  birthDate: '2000.10',
+  bio: '主要做后端，对前端也感兴趣。分享一些经历、心得，记录成长。',
   email: 'zhongyingjie1019@163.com',
   website: 'http://zhongyingjie.top'
 });
@@ -32,21 +32,20 @@ const stats = reactive({
 
 // 技能标签
 const skills = [
-  { name: 'Vue.js', level: 90, color: '#4FC08D' },
+  { name: 'Java', level: 95, color: '#61DAFB' },
   { name: 'JavaScript', level: 88, color: '#F7DF1E' },
-  { name: 'TypeScript', level: 85, color: '#3178C6' },
-  { name: 'Node.js', level: 82, color: '#339933' },
-  { name: 'React', level: 78, color: '#61DAFB' },
-  { name: 'Python', level: 75, color: '#3776AB' }
+  { name: 'C#', level: 75, color: '#3178C6' },
+  { name: 'Vue.js', level: 70, color: '#4FC08D' },
+  { name: 'Node.js', level: 55, color: '#339933' }
 ];
 
 // 最近动态
-const activities = [
+const activities = ref([
   { type: 'article', title: '发布了新文章《Vue 3 响应式原理深度解析》', time: '2小时前', icon: 'Edit' },
   { type: 'like', title: '点赞了文章《JavaScript 异步编程最佳实践》', time: '5小时前', icon: 'Star' },
   { type: 'comment', title: '评论了《前端性能优化指南》', time: '1天前', icon: 'ChatDotRound' },
   { type: 'follow', title: '关注了用户 @前端小白', time: '2天前', icon: 'User' }
-];
+]);
 
 // 社交链接
 const socialLinks = [
@@ -106,7 +105,7 @@ function openEmail(url){
               </span>
               <span class="meta-item">
                 <el-icon><Calendar /></el-icon>
-                {{ userInfo.joinDate }}
+                {{ userInfo.birthDate }}
               </span>
             </div>
             <p class="user-bio">{{ userInfo.bio }}</p>
