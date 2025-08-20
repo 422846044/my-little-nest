@@ -67,7 +67,10 @@ onMounted(async () => {
         const regex = /<h[1-6]>(.*?)<\/h[1-6]>/g;
         let dirId = 1
         var match
-
+        let lastIndex = 0
+        let lastLevel = 1
+        let lastValue = 1
+        let result = []
         while ((match = regex.exec(text)) !== null) {
           let matchText = match[0]
           let node = {}
@@ -78,6 +81,7 @@ onMounted(async () => {
           let style = ''
           let id = 'articleDir' + dirId
           let href = '#' + id
+          let value = 1
           //匹配成功则添加   
           if (matchText.startsWith('<h1>')) {
             text = text.replace(matchText, matchText.replace('<h1', '<h1 id="' + id + '"'))
@@ -85,22 +89,27 @@ onMounted(async () => {
           else if (matchText.startsWith('<h2>')) {
             text = text.replace(matchText, matchText.replace('<h2', '<h2 id="' + id + '"'))
             style += 'margin-left:10px;'
+            value = 2
           }
           else if (matchText.startsWith('<h3>')) {
             text = text.replace(matchText, matchText.replace('<h3', '<h3 id="' + id + '"'))
             style = 'margin-left:20px;'
+            value = 3
           }
           else if (matchText.startsWith('<h4>')) {
             text = text.replace(matchText, matchText.replace('<h4', '<h4 id="' + id + '"'))
             style = 'margin-left:30px;'
+            value = 4
           }
           else if (matchText.startsWith('<h5>')) {
             text = text.replace(matchText, matchText.replace('<h5', '<h5 id="' + id + '"'))
             style = 'margin-left:40px;'
+            value = 5
           }
           else if (matchText.startsWith('<h6>')) {
             text = text.replace(matchText, matchText.replace('<h6', '<h6 id="' + id + '"'))
             style = 'margin-left:50px;'
+            value = 6
           }
           aEl.style = style
           aEl.href = href
@@ -109,12 +118,50 @@ onMounted(async () => {
           divEl.appendChild(aEl)
 
           node.children = []
-          nodeTree.push(node)
+          if(value == 1){
+            nodeTree.push(node)
+            lastLevel = 1
+          }else{
+            // 对比当前值，若等于为同一级别，小于需要返回上一级，大于返回上一级
+            let sub = value - lastValue
+            if(sub==0){
+
+            }else if(sub<0){
+              lastLevel--
+            }else{
+              lastLevel++
+            }
+
+            if(lastLevel==2){
+              nodeTree[nodeTree.length-1].children.push(node)
+            }else if(lastLevel == 3){
+              nodeTree[nodeTree.length-1].children[nodeTree[nodeTree.length-1].children.length-1].children.push(node)
+            }else if(lastLevel == 4){
+              let children = nodeTree[nodeTree.length-1].children
+              let children1 = children[children.length-1]
+              let children2 = children1.children[children1.children.length-1]
+              children2.children.push(node)
+            }else if(lastLevel == 5){
+              let children = nodeTree[nodeTree.length-1].children
+              let children1 = children[children.length-1]
+              let children2 = children1.children[children1.children.length-1]
+              let children3 = children2.children[children2.children.length-1]
+              children3.children.push(node)
+            }else if(lastLevel == 6){
+              let children = nodeTree[nodeTree.length-1].children
+              let children1 = children[children.length-1]
+              let children2 = children1.children[children1.children.length-1]
+              let children3 = children2.children[children2.children.length-1]
+              let children4 = children3.children[children3.children.length-1]
+              children4.children.push(node)
+            }
+            
+          }
           console.log(nodeTree)
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
+          lastValue = value
         }
-        nodeTree[0].children = [{ info: '211', href: '22', children: [{ info: '1211', href: '22', children: [] }] }, { info: '231', href: '22', children: [] }]
         res.data.data.content = text
         info.articleInfo = res.data.data
 
@@ -158,19 +205,8 @@ const containerRef = ref(null)
             <span>文章目录</span>
           </div>
         </template>
-        <!-- <nav id="dirNav" v-for="node in nodeTree">
-          <div>
-            <a :href="node.href" :style="node.style">{{ node.info }}</a>
-          </div>
-        </nav> -->
         <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60">
           <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
-          <!-- <el-anchor-link v-for="node in nodeTree" :href="node.href" :title="node.info">
-            <template #sub-link>
-              <MyRecursiveComponent v-if="node.children && node.children.length" :items="node.children">
-            </MyRecursiveComponent>
-            </template>
-          </el-anchor-link> -->
         </el-anchor>
       </el-card>
     </el-affix>
