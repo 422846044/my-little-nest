@@ -1,10 +1,11 @@
 <script setup>
-import { toRefs, ref, reactive,h } from 'vue'
+import { onMounted, ref, reactive,h } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { 
   User, Location, Calendar, Trophy, Star,
-  Message, Plus, Document, View, ChatDotRound, Bell, Edit, Link
+  Message, Plus, Document, View, ChatDotRound, Bell, Edit, Link, DocumentAdd
 } from '@element-plus/icons-vue';
+import {getArticleCount, getNewUpdates} from '../api'
 
 var props = defineProps({
   logInfoList: Array
@@ -24,10 +25,10 @@ const userInfo = reactive({
 
 // 统计数据
 const stats = reactive({
-  articles: 128,
+  articles: 0,
   views: 15420,
-  likes: 2340,
-  comments: 856
+  likes: 0,
+  comments: 0
 });
 
 // 技能标签
@@ -40,12 +41,7 @@ const skills = [
 ];
 
 // 最近动态
-const activities = ref([
-  { type: 'article', title: '发布了新文章《Vue 3 响应式原理深度解析》', time: '2小时前', icon: 'Edit' },
-  { type: 'like', title: '点赞了文章《JavaScript 异步编程最佳实践》', time: '5小时前', icon: 'Star' },
-  { type: 'comment', title: '评论了《前端性能优化指南》', time: '1天前', icon: 'ChatDotRound' },
-  { type: 'follow', title: '关注了用户 @前端小白', time: '2天前', icon: 'User' }
-]);
+const activities = ref([]);
 
 // 社交链接
 const socialLinks = [
@@ -81,6 +77,31 @@ function openEmail(url){
     })
   })
 }
+
+onMounted(() => {
+  getArticleCount()
+  .then(res=>{
+    if(res.data.code == 200){
+      stats.articles = res.data.data
+    }
+  })
+  getNewUpdates()
+  .then(res=>{
+    if(res.data.code == 200){
+      res.data.data.forEach(element => {
+        if(element.type == 0){
+          element.iocn = "DocumentAdd"
+        }else if(element.type == 1){
+          element.icon = "Edit"
+        }
+        activities.value.push(element)
+      });
+      console.log(activities.value)
+      // activities.push(...res.data.data)
+    }
+  })
+})
+
 </script>
 
 <template>
@@ -188,7 +209,12 @@ function openEmail(url){
           <div class="activity-content">
             <div v-for="activity in activities" :key="activity.title" class="activity-item">
               <div class="activity-icon">
-                <el-icon><Edit /></el-icon>
+                <el-icon v-if="activity.icon == 'DocumentAdd'">
+                  <DocumentAdd />
+                </el-icon>
+                <el-icon v-if="activity.icon == 'Edit'">
+                  <Edit />
+                </el-icon>
               </div>
               <div class="activity-info">
                 <p class="activity-title">{{ activity.title }}</p>
@@ -457,6 +483,7 @@ function openEmail(url){
   padding-bottom: 0;
 }
 
+
 .activity-icon {
   width: 32px;
   height: 32px;
@@ -470,6 +497,9 @@ function openEmail(url){
 }
 
 .activity-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   margin: 0 0 4px 0;
   font-size: 14px;
   color: var(--el-text-color-primary);

@@ -56,6 +56,16 @@ export function uploadNginx(type, file){
      return http.putForFile(`${nest}/nginx/update/file/replaceAll/${type}`,file)
 }
 
+//获取文章数量统计
+export function getArticleCount(){
+     return http.get(`${nest}/article/count`)
+}
+
+//获取动态
+export function getNewUpdates(){
+     return http.get(`${nest}/updates/new`)
+}
+
 // put 请求
 export function putSomeAPI(params){
      return http.put(`${resquest}/putSome.json`,params)
