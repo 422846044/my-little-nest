@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { articleInfoQuery, simpleUserInfoQuery, dictMapQuery } from '../api'
 import { ArrowLeft, Menu } from '@element-plus/icons-vue'
 import MyRecursiveComponent from './MyRecursiveComponent.vue'
+import { fa } from 'element-plus/es/locales.mjs'
 
 const router = useRouter()
 const goBack = () => {
@@ -113,7 +114,8 @@ onMounted(async () => {
         let lastIndex = 0
         let lastLevel = 1
         let lastValue = 1
-        let result = []
+        let baseLevel = 2
+        let isFirst = true
         while ((match = regex.exec(text)) !== null) {
           let matchText = match[0]
           let node = {}
@@ -164,8 +166,15 @@ onMounted(async () => {
           if(value == 1){
             nodeTree.push(node)
             lastLevel = 1
+            isFirst = false
           }else{
             // 对比当前值，若等于为同一级别，小于需要返回上一级，大于返回上一级
+            if(isFirst){
+              baseLevel = value
+              isFirst = false
+              lastValue = value
+            }
+
             let sub = value - lastValue
             if(sub==0){
 
@@ -175,22 +184,24 @@ onMounted(async () => {
               lastLevel++
             }
 
-            if(lastLevel==2){
+            if(lastLevel==(baseLevel-1)){
+              nodeTree.push(node)
+            }else if(lastLevel==(baseLevel)){
               nodeTree[nodeTree.length-1].children.push(node)
-            }else if(lastLevel == 3){
+            }else if(lastLevel == (baseLevel+1)){
               nodeTree[nodeTree.length-1].children[nodeTree[nodeTree.length-1].children.length-1].children.push(node)
-            }else if(lastLevel == 4){
+            }else if(lastLevel == (baseLevel+2)){
               let children = nodeTree[nodeTree.length-1].children
               let children1 = children[children.length-1]
               let children2 = children1.children[children1.children.length-1]
               children2.children.push(node)
-            }else if(lastLevel == 5){
+            }else if(lastLevel == (baseLevel+3)){
               let children = nodeTree[nodeTree.length-1].children
               let children1 = children[children.length-1]
               let children2 = children1.children[children1.children.length-1]
               let children3 = children2.children[children2.children.length-1]
               children3.children.push(node)
-            }else if(lastLevel == 6){
+            }else if(lastLevel == (baseLevel+4)){
               let children = nodeTree[nodeTree.length-1].children
               let children1 = children[children.length-1]
               let children2 = children1.children[children1.children.length-1]
@@ -200,7 +211,6 @@ onMounted(async () => {
             }
             
           }
-          console.log(nodeTree)
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
           lastValue = value
