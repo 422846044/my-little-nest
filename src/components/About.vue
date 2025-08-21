@@ -90,7 +90,7 @@ onMounted(() => {
     if(res.data.code == 200){
       res.data.data.forEach(element => {
         if(element.type == 0){
-          element.iocn = "DocumentAdd"
+          element.icon = "DocumentAdd"
         }else if(element.type == 1){
           element.icon = "Edit"
         }
@@ -471,6 +471,7 @@ onMounted(() => {
 
 .activity-item {
   display: flex;
+  overflow: hidden;
   gap: 12px;
   margin-bottom: 16px;
   padding-bottom: 16px;
@@ -481,6 +482,11 @@ onMounted(() => {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0;
+}
+
+.activity-info{
+  overflow: hidden;
+  flex: 1;
 }
 
 
@@ -497,7 +503,7 @@ onMounted(() => {
 }
 
 .activity-title {
-  white-space: nowrap;
+  /* white-space: nowrap; */
   overflow: hidden;
   text-overflow: ellipsis;
   margin: 0 0 4px 0;
