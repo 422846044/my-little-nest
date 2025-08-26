@@ -6,6 +6,7 @@ import ArticleList from './ArticleList.vue'
 import HomeSearch from './HomeSearch.vue'
 import { dictMapQuery, getHistory } from '../api'
 import { Menu } from '@element-plus/icons-vue'
+import { ElMessageBox,ElMessage } from 'element-plus'
 
 const info = reactive({
   articleList: [],
@@ -67,6 +68,11 @@ onMounted(async () => {
 })
 
 const getArticleList = () => {
+  //校验关键字长度
+  if(info.pageInfo.keyword&&info.pageInfo.keyword.length > 20){
+    ElMessage.error('搜索关键词长度最大为20')
+    return
+  }
   articleListQuery(info.pageInfo)
     .then(res => {
       if (res.data.success == true) {

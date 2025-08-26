@@ -25,12 +25,12 @@ export function djcTaskRetry(params){
 
 //文章列表查询
 export function articleListQuery(params){
-     return http.get(`${nest}/article/getArticleByPage`,params)
+     return http.get(`${nest}/article/list`,params)
 }
 
 //文章信息获取
 export function articleInfoQuery(params){
-     return http.get(`${nest}/article/getArticleInfoById`,params)
+     return http.get(`${nest}/article/info/${params}`)
 }
 
 //数据字典表查询

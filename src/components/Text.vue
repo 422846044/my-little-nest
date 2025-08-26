@@ -96,7 +96,7 @@ onMounted(async () => {
   //获取字典信息
   dict.category = await getDict('wzfl')
   dict.tags = await getDict('wzbq')
-  articleInfoQuery({ id: id })
+  articleInfoQuery(id)
     .then(res => {
       if (res.data.success == true) {
         simpleUserInfoQuery(res.data.data.author == null ? 0 : res.data.data.author)
