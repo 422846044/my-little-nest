@@ -35,7 +35,6 @@ export function articleInfoQuery(params){
 
 //数据字典表查询
 export function dictMapQuery(params){
-     console.log(params)
      return http.get(`${nest}/dataDict/map/${params}`)
 }
 

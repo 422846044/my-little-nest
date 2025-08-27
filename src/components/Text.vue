@@ -170,7 +170,7 @@ onMounted(async () => {
           }else{
             // 对比当前值，若等于为同一级别，小于需要返回上一级，大于返回上一级
             if(isFirst){
-              baseLevel = value
+              baseLevel = 2
               isFirst = false
               lastValue = value
             }
@@ -182,7 +182,7 @@ onMounted(async () => {
               lastLevel--
             }else{
               lastLevel++
-            }
+            } 
 
             if(lastLevel==(baseLevel-1)){
               nodeTree.push(node)
@@ -209,6 +209,7 @@ onMounted(async () => {
               let children4 = children3.children[children3.children.length-1]
               children4.children.push(node)
             }
+            console.log(node);
             
           }
           //document.getElementById('dirNav').appendChild(divEl)
