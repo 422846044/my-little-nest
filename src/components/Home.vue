@@ -103,10 +103,22 @@ const getArticleList = () => {
 
 function handleCurrentChange() {
   getArticleList()
+  // 分页后滚动到顶部
+  scrollToTop()
 }
 
 function handleSizeChange() {
   getArticleList()
+  // 分页后滚动到顶部
+  scrollToTop()
+}
+
+// 滚动到顶部的函数
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  })
 }
 
 function inputChange(value) {

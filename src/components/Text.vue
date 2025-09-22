@@ -8,13 +8,26 @@ import { fa } from 'element-plus/es/locales.mjs'
 
 const router = useRouter()
 const goBack = () => {
-  // 检查是否有历史记录可以返回
+  //检查是否有历史记录可以返回
   if (window.history.length > 1) {
-    router.go(-1)
+    router.go((-1 - hashCount))
   } else {
     // 如果没有历史记录，则返回首页
     router.push('/home')
   }
+}
+
+let oldHash = ''
+let hashCount = 0
+
+function getNum(){
+  setTimeout(()=>{
+    let hash = route.hash
+    if(hash != '' && hash != oldHash){
+      oldHash = hash
+      hashCount++
+    }
+  },100)
 }
 
 // 移动端目录显示状态
@@ -255,8 +268,8 @@ onUnmounted(() => {
             <span>文章目录</span>
           </div>
         </template>
-        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60">
-          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
+        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60" @click="getNum()">
+          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree" ></MyRecursiveComponent>
         </el-anchor>
       </el-card>
     </div>
@@ -270,8 +283,8 @@ onUnmounted(() => {
             <el-button type="text" @click="closeMobileMenu" size="small">×</el-button>
           </div>
         </template>
-        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60">
-          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree"></MyRecursiveComponent>
+        <el-anchor :container="containerRef" direction="vertical" type="underline" :offset="60" @click="getNum()">
+          <MyRecursiveComponent v-if="nodeTree && nodeTree.length" :items="nodeTree" ></MyRecursiveComponent>
         </el-anchor>
       </el-card>
     </div>
