@@ -8,7 +8,13 @@ import { fa } from 'element-plus/es/locales.mjs'
 
 const router = useRouter()
 const goBack = () => {
-  router.push('/home')
+  // 检查是否有历史记录可以返回
+  if (window.history.length > 1) {
+    router.go(-1)
+  } else {
+    // 如果没有历史记录，则返回首页
+    router.push('/home')
+  }
 }
 
 // 移动端目录显示状态
@@ -18,21 +24,9 @@ const showMobileMenu = ref(false)
 const isMobile = ref(false)
 
 // 更新移动端状态
-const descriptionsColumn = ref(4)
-const descriptionsDirection = ref('horizontal')
 const updateMobileStatus = () => {
   const width = window.innerWidth
   isMobile.value = width <= 768
-  if (width <= 768) {
-    descriptionsColumn.value = 1
-    descriptionsDirection.value = 'vertical'
-  } else if (width <= 1200) {
-    descriptionsColumn.value = 2
-    descriptionsDirection.value = 'horizontal'
-  } else {
-    descriptionsColumn.value = 4
-    descriptionsDirection.value = 'horizontal'
-  }
 }
 
 // 切换移动端目录显示
@@ -99,10 +93,10 @@ onMounted(async () => {
   articleInfoQuery(id)
     .then(res => {
       if (res.data.success == true) {
-        simpleUserInfoQuery(res.data.data.author == null ? 0 : res.data.data.author)
+        simpleUserInfoQuery(res.data.data.author == null ? 1 : res.data.data.author)
           .then(res => {
             info.userInfo = res.data.data
-            if (info.userInfo.avatar === null || info.userInfo.avatar === '') {
+            if (info.userInfo.avatar == null || info.userInfo.avatar == '') {
               info.userInfo.avatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
             }
           })
@@ -209,8 +203,6 @@ onMounted(async () => {
               let children4 = children3.children[children3.children.length-1]
               children4.children.push(node)
             }
-            console.log(node);
-            
           }
           //document.getElementById('dirNav').appendChild(divEl)
           dirId++
@@ -236,7 +228,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <el-page-header id="text-page-header" :icon="ArrowLeft" title="上一页" @back="goBack">
+  <el-page-header id="text-page-header" :icon="ArrowLeft" title="上一页" @back="goBack" style="padding-left: 5%; padding-right: 5%;">
     <template #content>
       <el-avatar :size="32" class="mr-3" :src="info.userInfo.avatar" style="vertical-align:text-bottom" />
 
@@ -244,17 +236,6 @@ onUnmounted(() => {
         {{ info.articleInfo.title }}
       </el-text>
     </template>
-    <el-descriptions :column="descriptionsColumn" :direction="descriptionsDirection" size="small" class="mt-4">
-      <el-descriptions-item label="作者">{{ info.userInfo.nickName }}</el-descriptions-item>
-      <el-descriptions-item label="分类">{{ dict.category[info.articleInfo.category] }}</el-descriptions-item>
-      <el-descriptions-item label="标签">
-        <template v-for="tagCode in info.articleInfo.tags">
-          <el-tag size="small">{{ dict.tags[tagCode] }}</el-tag>
-          <span>{{ ' ' }}</span>
-        </template>
-      </el-descriptions-item>
-      <el-descriptions-item label="时间">{{ info.articleInfo.createTime }}</el-descriptions-item>
-    </el-descriptions>
   </el-page-header>
   
   <!-- 移动端目录按钮 -->
@@ -296,9 +277,37 @@ onUnmounted(() => {
     </div>
 
     <el-main class="main-content">
+      <!-- 文章信息 -->
+      <div class="article-info">
+        <div class="info-item">
+          <span class="info-label">作者：</span>
+          <span class="info-value">{{ info.userInfo.nickName }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">分类：</span>
+          <span class="info-value">{{ dict.category[info.articleInfo.category] }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">标签：</span>
+          <span class="info-value">
+            <template v-for="tagCode in info.articleInfo.tags">
+              <el-tag size="small">{{ dict.tags[tagCode] }}</el-tag>
+              <span>{{ ' ' }}</span>
+            </template>
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">时间：</span>
+          <span class="info-value">{{ info.articleInfo.createTime }}</span>
+        </div>
+      </div>
+      
       <el-text :ref="containerRef" id="articleText" size="large" v-html="info.articleInfo.content">
       </el-text>
     </el-main>
+
+    <!-- 右侧空白区域 -->
+    <div class="right-sidebar"></div>
   </el-container>
 </template>
 
@@ -351,41 +360,45 @@ a:hover {
   margin-top: 1em;
 }
 
-/* 桌面端保持 Element Plus 默认换行行为 */
-
-/* 移动端 descriptions 样式优化 */
-@media (max-width: 768px) {
-  :deep(.el-descriptions__body) {
-    width: 100%;
-  }
-  :deep(.el-descriptions__cell) {
-    padding: 6px 8px;
-  }
-  :deep(.el-descriptions__label) {
-    white-space: nowrap;
-  }
-  :deep(.el-descriptions__content) {
-    white-space: normal;
-    word-break: break-word;
-  }
-}
-
 /* 移动端适配样式 */
 .text-container {
   position: relative;
+  display: flex;
+  width: 90%;
+  margin: 0 auto;
 }
 
 .desktop-menu {
-  max-width: 20%;
+  flex: 1;
   position: sticky;
-  top: 80px;
+  top: 40px;
   height: fit-content;
+  padding: 20px 10px 20px 0;
 }
 
-/* 移动端隐藏桌面端目录 */
+.main-content {
+  flex: 3;
+  padding: 20px;
+}
+
+.right-sidebar {
+  flex: 1;
+  padding: 20px 0 20px 10px;
+}
+
+/* 移动端隐藏桌面端目录和右侧栏 */
 @media (max-width: 768px) {
-  .desktop-menu {
+  .desktop-menu,
+  .right-sidebar {
     display: none;
+  }
+  
+  .text-container {
+    flex-direction: column;
+  }
+  
+  .main-content {
+    flex: 1;
   }
 }
 
@@ -419,45 +432,6 @@ a:hover {
   animation: slideIn 0.3s ease-out;
 }
 
-.main-content {
-  width: 100%;
-  padding: 20px;
-}
-
-/* 标签容器换行样式（桌面端单行） */
-.tags-container {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow: hidden;
-}
-.tag-item {
-  margin: 0 6px 0 0;
-}
-:deep(.tags-container .el-tag) {
-  padding: 0 6px;
-  height: 22px;
-  line-height: 22px;
-}
-
-/* 桌面端标签单行省略并保持与其他项对齐 */
-.tags-text-ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* 移动端标签容器允许换行 */
-@media (max-width: 768px) {
-  .tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 8px;
-    white-space: normal;
-    overflow: visible;
-  }
-}
-
 @keyframes slideIn {
   from {
     transform: translateX(100%);
@@ -467,16 +441,43 @@ a:hover {
   }
 }
 
+/* 文章信息样式 */
+.article-info {
+  background-color: var(--el-bg-color-page);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--el-color-primary);
+  border: 1px solid var(--el-border-color-light);
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--el-text-color-regular);
+  min-width: 60px;
+  margin-right: 8px;
+}
+
+.info-value {
+  color: var(--el-text-color-primary);
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
 /* 移动端响应式样式 */
 @media (max-width: 768px) {
-  .el-descriptions {
-    font-size: 12px;
-  }
-  
-  .el-descriptions-item {
-    padding: 8px 4px;
-  }
-  
   .title {
     font-size: 1.2em;
     margin-left: 0.5em;
@@ -484,6 +485,21 @@ a:hover {
   
   .main-content {
     padding: 10px;
+  }
+  
+  .article-info {
+    padding: 12px;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  
+  .info-label {
+    margin-bottom: 4px;
+    min-width: auto;
   }
   
   #articleText {

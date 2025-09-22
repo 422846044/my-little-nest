@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { articleListQuery } from '../api'
 import Aside from './Aside.vue'
 import ArticleList from './ArticleList.vue'
@@ -8,21 +9,24 @@ import { dictMapQuery, getHistory } from '../api'
 import { Menu } from '@element-plus/icons-vue'
 import { ElMessageBox,ElMessage } from 'element-plus'
 
+const route = useRoute()
+const router = useRouter()
+
 const info = reactive({
   articleList: [],
   total: 0,
   category: {},
   tags: {},
   pageInfo: {
-    pageSize: 10,
-    pageNum: 1,
-    order: 'create_time',
-    sort: 'desc',
-    keyword: '',
-    tag: '',
-    category: null,
-    year: null,
-    month: null
+    pageSize: parseInt(route.query.pageSize) || 10,
+    pageNum: parseInt(route.query.pageNum) || 1,
+    order: route.query.order || 'create_time',
+    sort: route.query.sort || 'desc',
+    keyword: route.query.keyword || '',
+    tag: route.query.tag || '',
+    category: route.query.category ? parseInt(route.query.category) : null,
+    year: route.query.year ? parseInt(route.query.year) : null,
+    month: route.query.month ? parseInt(route.query.month) : null
   }
 });
 
@@ -73,6 +77,21 @@ const getArticleList = () => {
     ElMessage.error('搜索关键词长度最大为20')
     return
   }
+  
+  // 更新 URL 查询参数
+  const query = {}
+  if (info.pageInfo.pageNum !== 1) query.pageNum = info.pageInfo.pageNum
+  if (info.pageInfo.pageSize !== 10) query.pageSize = info.pageInfo.pageSize
+  if (info.pageInfo.keyword) query.keyword = info.pageInfo.keyword
+  if (info.pageInfo.tag) query.tag = info.pageInfo.tag
+  if (info.pageInfo.category) query.category = info.pageInfo.category
+  if (info.pageInfo.year) query.year = info.pageInfo.year
+  if (info.pageInfo.month) query.month = info.pageInfo.month
+  if (info.pageInfo.order !== 'create_time') query.order = info.pageInfo.order
+  if (info.pageInfo.sort !== 'desc') query.sort = info.pageInfo.sort
+  
+  router.replace({ query })
+  
   articleListQuery(info.pageInfo)
     .then(res => {
       if (res.data.success == true) {
@@ -92,6 +111,18 @@ function handleSizeChange() {
 
 function inputChange(value) {
   info.pageInfo.keyword = value
+  info.pageInfo.pageNum = 1 // 搜索时重置到第一页
+  getArticleList()
+}
+
+function resetFilters() {
+  // 清除所有筛选条件
+  info.pageInfo.keyword = ''
+  info.pageInfo.category = null
+  info.pageInfo.tag = ''
+  info.pageInfo.year = null
+  info.pageInfo.month = null
+  info.pageInfo.pageNum = 1
   getArticleList()
 }
 
@@ -99,10 +130,10 @@ function categoryCheck(value) {
   info.pageInfo.keyword = ''
   info.pageInfo.tag = ''
   info.pageInfo.category = value
-  info.year = null
-  info.month = null
+  info.pageInfo.year = null
+  info.pageInfo.month = null
+  info.pageInfo.pageNum = 1 // 筛选时重置到第一页
   getArticleList()
-  info.pageInfo.category = null
   // 移动端选择后关闭抽屉
   if (isMobile.value) {
     drawerVisible.value = false;
@@ -115,8 +146,8 @@ function tagsCheck(value) {
   info.pageInfo.tag = value
   info.pageInfo.year = null
   info.pageInfo.month = null
+  info.pageInfo.pageNum = 1 // 筛选时重置到第一页
   getArticleList()
-  info.pageInfo.tag = ''
   // 移动端选择后关闭抽屉
   if (isMobile.value) {
     drawerVisible.value = false;
@@ -129,9 +160,8 @@ function historyCheck(year, month) {
   info.pageInfo.tag = ''
   info.pageInfo.year = year
   info.pageInfo.month = month
+  info.pageInfo.pageNum = 1 // 筛选时重置到第一页
   getArticleList()
-  info.pageInfo.year = null
-  info.pageInfo.month = null
   // 移动端选择后关闭抽屉
   if (isMobile.value) {
     drawerVisible.value = false;
@@ -161,12 +191,16 @@ function historyCheck(year, month) {
         />
         <div class="mobile-search">
           <HomeSearch placeholder="请输入关键词" @inputChange="inputChange"></HomeSearch>
+          <el-button type="info" plain @click="resetFilters" class="reset-button">重置</el-button>
         </div>
       </div>
       
       <!-- 桌面端搜索栏 -->
       <el-header v-if="!isMobile" class="search-header">
-        <HomeSearch placeholder="请输入关键词" @inputChange="inputChange"></HomeSearch>
+        <div class="search-container">
+          <HomeSearch placeholder="请输入关键词" @inputChange="inputChange"></HomeSearch>
+          <el-button type="info" plain @click="resetFilters" class="reset-button">重置</el-button>
+        </div>
       </el-header>
       
       <el-main style="overflow: visible;" class="content-main">
@@ -241,6 +275,33 @@ a:visited {
   justify-content: center;
   height: auto;
   padding: 20px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 12px;
+}
+
+.search-container :deep(.input-div) {
+  flex: 1;
+}
+
+.mobile-search {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-search :deep(.input-div) {
+  flex: 1;
+}
+
+.reset-button {
+  flex-shrink: 0;
 }
 
 .content-main {

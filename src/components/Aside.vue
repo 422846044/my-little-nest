@@ -19,7 +19,6 @@ const props = defineProps({
 const emits = defineEmits(['categoryCheck', 'tagsCheck', 'historyCheck'])
 
 function onChange(key) {
-    console.log(key)
 }
 
 const typeArr = ['primary', 'default', 'success', 'warning', 'danger', 'info']

@@ -54,12 +54,9 @@ function uploadFile(file, resolve) {
         observable.subscribe({
           next: ((response) => {
             if (response.total.percent >= 100) {
-              console.log('上传成功');
             }
           }),
           error: ((err) => {
-            console.log(err)
-            console.log('上传失败,请稍后再试');
           }),
           complete: ((res) => {
             resolve('http://tuchuang.dfwx.fun/' + res.key)

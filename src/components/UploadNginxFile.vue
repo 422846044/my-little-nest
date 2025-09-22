@@ -76,7 +76,6 @@ function onRemove() {
   canUpload.value = false
 }
 const fn=(e)=>{
-  console.log(e);
 }
 
 </script>

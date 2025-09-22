@@ -26,7 +26,7 @@ const userInfo = reactive({
 // 统计数据
 const stats = reactive({
   articles: 0,
-  views: 15420,
+  views: 420,
   likes: 0,
   comments: 0
 });
@@ -96,7 +96,6 @@ onMounted(() => {
         }
         activities.value.push(element)
       });
-      console.log(activities.value)
       // activities.push(...res.data.data)
     }
   })
