@@ -14,6 +14,7 @@
     "@vueuse/core": "^12.7.0",
     "axios": "^1.6.5",
     "element-plus": "^2.10.7",
+    "highlight.js": "^11.11.1",
     "qiniu-js": "^3.4.2",
     "tinymce": "^6.8.2",
     "uuid": "^9.0.1",
