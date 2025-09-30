@@ -18,8 +18,8 @@ const userInfo = reactive({
   title: '后端开发工程师',
   location: '江西·赣州',
   birthDate: '2000.10',
-  bio: '主要做后端，对前端也感兴趣。分享一些经历、心得，记录成长。',
-  email: 'zhongyingjie1019@163.com',
+  bio: '主要做后端，对前端也感兴趣。这个博客记录所学习的知识以及一些思考，是一个见证成长的平台。',
+  email: 'zhongyingjie00@163.com',
   website: 'http://zhongyingjie.top'
 });
 

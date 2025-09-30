@@ -4,7 +4,7 @@
 
 <template>
   <div class="footer-content">
-    <span class="copyright">© 2024 淡风无痕. All rights reserved.</span>  
+    <span class="copyright">© 2024 Zhong Yingjie. All rights reserved.</span>  
     <span class="links">  
       <a href="https://beian.miit.gov.cn/" target="_blank">赣ICP备2024022512号-2</a>
     </span> 
